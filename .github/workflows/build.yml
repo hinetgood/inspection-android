@@ -37,7 +37,14 @@ jobs:
       run: rm -rf app/build .gradle ~/.gradle/caches
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon --stacktrace -Pandroid.useAndroidX=true -Pandroid.enableJetifier=true 2>&1 | tee gradle-output.txt; exit ${PIPESTATUS[0]}
+      env:
+        ANDROID_USE_ANDROIDX: "true"
+        ANDROID_ENABLE_JETIFIER: "true"
+      run: |
+        echo "android.useAndroidX=true" >> gradle.properties
+        echo "android.enableJetifier=true" >> gradle.properties
+        cat gradle.properties
+        ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee gradle-output.txt; exit ${PIPESTATUS[0]}
 
     - name: Upload Gradle Log
       if: always()
