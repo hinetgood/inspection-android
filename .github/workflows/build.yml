@@ -22,6 +22,9 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
+    - name: Accept SDK licenses
+      run: yes | sdkmanager --licenses || true
+
     - name: Install Android SDK components
       run: |
         sdkmanager --install "platforms;android-34" "build-tools;34.0.0" "platform-tools"
@@ -49,13 +52,11 @@ jobs:
         ./gradlew -q :app:properties | grep -E "android\.useAndroidX|android\.enableJetifier" || echo "Properties not found in output"
 
     - name: Build Debug APK
-      id: build
       run: |
-        ./gradlew -p "$GITHUB_WORKSPACE" assembleDebug \
+        ./gradlew :app:assembleDebug \
           -Pandroid.useAndroidX=true \
           -Pandroid.enableJetifier=true \
-          --no-daemon --stacktrace --info --warning-mode all 2>&1 | tee build.log
-      continue-on-error: true
+          --no-daemon --stacktrace 2>&1 | tee build.log
 
     - name: Upload Build Log
       if: always()
@@ -64,37 +65,29 @@ jobs:
         name: build-log
         path: build.log
 
-    - name: Show last 200 lines of build log
+    - name: List build outputs
       if: always()
-      run: tail -200 build.log
-
-    - name: Check build result
-      if: steps.build.outcome == 'failure'
       run: |
-        echo "Build failed! Check the build log above for errors."
-        exit 1
+        echo "=== Build outputs directory ==="
+        ls -laR app/build/outputs/ 2>/dev/null || echo "No outputs directory"
+        echo ""
+        echo "=== All APK files ==="
+        find . -name "*.apk" -type f -exec ls -la {} \; 2>/dev/null || echo "No APK files found"
 
-    - name: Find APK
-      if: steps.build.outcome == 'success'
-      id: find_apk
+    - name: Locate APK
+      id: apk
       run: |
-        echo "=== Looking for APK files ==="
-        APK_PATH=$(find . -name "*.apk" -type f | head -1)
-        echo "Found APK: $APK_PATH"
-        if [ -n "$APK_PATH" ]; then
-          echo "apk_found=true" >> $GITHUB_OUTPUT
-          echo "apk_dir=$(dirname $APK_PATH)" >> $GITHUB_OUTPUT
-          ls -la $APK_PATH
-        else
-          echo "apk_found=false" >> $GITHUB_OUTPUT
-          echo "No APK found!"
+        APK_PATH=$(find app/build/outputs -name "*.apk" -type f | head -1)
+        if [ -z "$APK_PATH" ]; then
+          echo "ERROR: No APK file found!"
+          exit 1
         fi
+        echo "Found APK: $APK_PATH"
+        echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
 
     - name: Upload Debug APK
-      if: steps.build.outcome == 'success' && steps.find_apk.outputs.apk_found == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
-        path: |
-          **/outputs/apk/**/*.apk
+        path: ${{ steps.apk.outputs.apk_path }}
         if-no-files-found: error
