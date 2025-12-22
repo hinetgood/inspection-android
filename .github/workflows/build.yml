@@ -36,7 +36,7 @@ jobs:
         cat build.gradle.kts
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon --stacktrace --info 2>&1 | tee gradle-output.txt; exit ${PIPESTATUS[0]}
+      run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee gradle-output.txt; exit ${PIPESTATUS[0]}
 
     - name: Upload Gradle Log
       if: always()
