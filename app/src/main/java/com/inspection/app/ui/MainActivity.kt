@@ -2,6 +2,7 @@ package com.inspection.app.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -16,6 +17,7 @@ class MainActivity : AppCompatActivity() {
 
     private var currentScreen = Screen.CASES
     private var currentCaseId: Long = -1
+    private var currentCaseName: String = ""
     private var currentAddressId: Long = -1
     private var currentAddressName: String = ""
 
@@ -28,8 +30,24 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupBackHandler()
         setupToolbar()
         showCaseList()
+    }
+
+    private fun setupBackHandler() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                when (currentScreen) {
+                    Screen.PHOTOS -> showAddressList(currentCaseId, currentCaseName)
+                    Screen.ADDRESSES -> showCaseList()
+                    Screen.CASES -> {
+                        isEnabled = false
+                        onBackPressedDispatcher.onBackPressed()
+                    }
+                }
+            }
+        })
     }
 
     private fun setupToolbar() {
@@ -55,6 +73,7 @@ class MainActivity : AppCompatActivity() {
     fun showAddressList(caseId: Long, caseName: String) {
         currentScreen = Screen.ADDRESSES
         currentCaseId = caseId
+        currentCaseName = caseName
         binding.toolbar.title = caseName
         binding.toolbar.setNavigationIcon(R.drawable.ic_back)
         binding.fab.setImageResource(android.R.drawable.ic_input_add)
@@ -86,14 +105,6 @@ class MainActivity : AppCompatActivity() {
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.commit {
             replace(R.id.container, fragment)
-        }
-    }
-
-    override fun onBackPressed() {
-        when (currentScreen) {
-            Screen.PHOTOS -> showAddressList(currentCaseId, binding.toolbar.title.toString())
-            Screen.ADDRESSES -> showCaseList()
-            Screen.CASES -> super.onBackPressed()
         }
     }
 }
