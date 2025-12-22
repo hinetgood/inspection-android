@@ -21,13 +21,17 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Verify files
+    - name: Verify gradle.properties
       run: |
-        echo "=== gradle.properties ==="
+        echo "=== Current directory ==="
+        pwd
+        echo ""
+        echo "=== gradle.properties content ==="
         cat gradle.properties
         echo ""
-        echo "=== All files ==="
-        ls -la
+        echo "=== Checking for useAndroidX ==="
+        grep -q "android.useAndroidX=true" gradle.properties || (echo "ERROR: useAndroidX not found!" && exit 1)
+        echo "useAndroidX is correctly set to true"
 
     - name: Force clean
       run: rm -rf app/build .gradle ~/.gradle/caches
