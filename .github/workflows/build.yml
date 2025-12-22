@@ -76,14 +76,25 @@ jobs:
 
     - name: Find APK
       if: steps.build.outcome == 'success'
+      id: find_apk
       run: |
         echo "=== Looking for APK files ==="
-        find . -name "*.apk" -type f -exec ls -la {} \;
+        APK_PATH=$(find . -name "*.apk" -type f | head -1)
+        echo "Found APK: $APK_PATH"
+        if [ -n "$APK_PATH" ]; then
+          echo "apk_found=true" >> $GITHUB_OUTPUT
+          echo "apk_dir=$(dirname $APK_PATH)" >> $GITHUB_OUTPUT
+          ls -la $APK_PATH
+        else
+          echo "apk_found=false" >> $GITHUB_OUTPUT
+          echo "No APK found!"
+        fi
 
     - name: Upload Debug APK
-      if: steps.build.outcome == 'success'
+      if: steps.build.outcome == 'success' && steps.find_apk.outputs.apk_found == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
-        path: app/build/outputs/apk/debug/
-        if-no-files-found: warn
+        path: |
+          **/outputs/apk/**/*.apk
+        if-no-files-found: error
