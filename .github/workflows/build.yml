@@ -21,30 +21,23 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Verify gradle.properties
-      run: |
-        echo "=== Current directory ==="
-        pwd
-        echo ""
-        echo "=== gradle.properties content ==="
-        cat gradle.properties
-        echo ""
-        echo "=== Checking for useAndroidX ==="
-        grep -q "android.useAndroidX=true" gradle.properties || (echo "ERROR: useAndroidX not found!" && exit 1)
-        echo "useAndroidX is correctly set to true"
-
     - name: Force clean
       run: rm -rf app/build .gradle ~/.gradle/caches
 
-    - name: Build Debug APK
-      env:
-        ANDROID_USE_ANDROIDX: "true"
-        ANDROID_ENABLE_JETIFIER: "true"
+    - name: Create fresh gradle.properties
       run: |
-        echo "android.useAndroidX=true" >> gradle.properties
-        echo "android.enableJetifier=true" >> gradle.properties
+        cat > gradle.properties << 'EOF'
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
+android.enableJetifier=true
+android.nonTransitiveRClass=true
+kotlin.code.style=official
+EOF
+        echo "=== Fresh gradle.properties ==="
         cat gradle.properties
-        ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee gradle-output.txt; exit ${PIPESTATUS[0]}
+
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee gradle-output.txt; exit ${PIPESTATUS[0]}
 
     - name: Upload Gradle Log
       if: always()
