@@ -10,49 +10,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout sources
+      uses: actions/checkout@v4
 
-    - name: Set up JDK 17
+    - name: Setup Java
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
         distribution: 'temurin'
+        java-version: 17
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-
-    - name: Force clean
-      run: rm -rf app/build .gradle ~/.gradle/caches
 
     - name: Show build config
       run: |
         echo "=== gradle.properties ==="
         cat gradle.properties
         echo ""
-        echo "=== gradle-wrapper.properties ==="
-        cat gradle/wrapper/gradle-wrapper.properties
-        echo ""
         echo "=== build.gradle.kts ==="
         cat build.gradle.kts
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee gradle-output.txt; exit ${PIPESTATUS[0]}
+      run: ./gradlew assembleDebug --stacktrace
 
     - name: Show Build Errors
       if: failure()
       run: |
-        echo "=== LAST 100 LINES OF BUILD LOG ==="
-        tail -100 gradle-output.txt
-        echo ""
-        echo "=== SEARCHING FOR ERRORS ==="
-        grep -i "error\|failed\|exception" gradle-output.txt | tail -50 || true
-
-    - name: Upload Gradle Log
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: gradle-log
-        path: gradle-output.txt
+        echo "=== Searching for errors ==="
+        find . -name "*.log" -exec cat {} \; 2>/dev/null || true
 
     - name: Find APK
       run: find . -name "*.apk" -type f
