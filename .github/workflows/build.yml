@@ -77,9 +77,16 @@ jobs:
     - name: Locate APK
       id: apk
       run: |
-        APK_PATH=$(find app/build/outputs -name "*.apk" -type f | head -1)
+        echo "=== Searching for APK in app/build/outputs ==="
+        APK_PATH=$(find app/build/outputs -name "*.apk" -type f 2>/dev/null | head -1)
         if [ -z "$APK_PATH" ]; then
-          echo "ERROR: No APK file found!"
+          echo "Not found in app/build/outputs, searching entire workspace..."
+          APK_PATH=$(find . -name "*.apk" -type f 2>/dev/null | head -1)
+        fi
+        if [ -z "$APK_PATH" ]; then
+          echo "ERROR: No APK file found anywhere!"
+          echo "=== Listing all build directories ==="
+          find . -type d -name "build" 2>/dev/null | head -20
           exit 1
         fi
         echo "Found APK: $APK_PATH"
