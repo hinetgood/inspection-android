@@ -21,28 +21,25 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Verify gradle.properties
-      run: cat gradle.properties
+    - name: Verify files
+      run: |
+        echo "=== gradle.properties ==="
+        cat gradle.properties
+        echo ""
+        echo "=== All files ==="
+        ls -la
 
-    - name: Clean build
-      run: ./gradlew clean --no-daemon
+    - name: Force clean
+      run: rm -rf app/build .gradle ~/.gradle/caches
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log || (cat build.log && exit 1)
-
-    - name: Upload Build Log
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-log
-        path: build.log
+      run: ./gradlew assembleDebug --no-daemon --stacktrace
 
     - name: Find APK
-      run: find . -name "*.apk" -type f 2>/dev/null || echo "No APK found"
+      run: find . -name "*.apk" -type f
 
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
         path: app/build/outputs/apk/debug/*.apk
-        if-no-files-found: warn
