@@ -34,18 +34,33 @@ jobs:
         cat build.gradle.kts
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --stacktrace
+      id: build
+      run: ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
+      continue-on-error: true
 
-    - name: Show Build Errors
-      if: failure()
+    - name: Upload Build Log
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-log
+        path: build.log
+
+    - name: Show last 200 lines of build log
+      if: always()
+      run: tail -200 build.log
+
+    - name: Check build result
+      if: steps.build.outcome == 'failure'
       run: |
-        echo "=== Searching for errors ==="
-        find . -name "*.log" -exec cat {} \; 2>/dev/null || true
+        echo "Build failed! Check the build log above for errors."
+        exit 1
 
     - name: Find APK
+      if: steps.build.outcome == 'success'
       run: find . -name "*.apk" -type f
 
     - name: Upload Debug APK
+      if: steps.build.outcome == 'success'
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
