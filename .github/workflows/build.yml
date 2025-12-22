@@ -24,13 +24,19 @@ jobs:
     - name: Force clean
       run: rm -rf app/build .gradle ~/.gradle/caches
 
-    - name: Verify gradle.properties
+    - name: Show build config
       run: |
         echo "=== gradle.properties ==="
         cat gradle.properties
+        echo ""
+        echo "=== gradle-wrapper.properties ==="
+        cat gradle/wrapper/gradle-wrapper.properties
+        echo ""
+        echo "=== build.gradle.kts ==="
+        cat build.gradle.kts
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee gradle-output.txt; exit ${PIPESTATUS[0]}
+      run: ./gradlew assembleDebug --no-daemon --stacktrace --info 2>&1 | tee gradle-output.txt; exit ${PIPESTATUS[0]}
 
     - name: Upload Gradle Log
       if: always()
