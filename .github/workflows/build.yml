@@ -37,7 +37,7 @@ jobs:
       run: rm -rf app/build .gradle ~/.gradle/caches
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon --stacktrace --refresh-dependencies 2>&1 | tee gradle-output.txt; exit ${PIPESTATUS[0]}
+      run: ./gradlew assembleDebug --no-daemon --stacktrace -Pandroid.useAndroidX=true -Pandroid.enableJetifier=true 2>&1 | tee gradle-output.txt; exit ${PIPESTATUS[0]}
 
     - name: Upload Gradle Log
       if: always()
