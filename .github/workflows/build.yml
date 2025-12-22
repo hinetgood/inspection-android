@@ -26,13 +26,11 @@ jobs:
 
     - name: Create fresh gradle.properties
       run: |
-        cat > gradle.properties << 'EOF'
-org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
-android.useAndroidX=true
-android.enableJetifier=true
-android.nonTransitiveRClass=true
-kotlin.code.style=official
-EOF
+        echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" > gradle.properties
+        echo "android.useAndroidX=true" >> gradle.properties
+        echo "android.enableJetifier=true" >> gradle.properties
+        echo "android.nonTransitiveRClass=true" >> gradle.properties
+        echo "kotlin.code.style=official" >> gradle.properties
         echo "=== Fresh gradle.properties ==="
         cat gradle.properties
 
