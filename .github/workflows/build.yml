@@ -19,6 +19,13 @@ jobs:
         distribution: 'temurin'
         java-version: 17
 
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Install Android SDK components
+      run: |
+        sdkmanager --install "platforms;android-34" "build-tools;34.0.0" "platform-tools"
+
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
 
@@ -27,15 +34,27 @@ jobs:
 
     - name: Show build config
       run: |
+        echo "=== Working directory ==="
+        pwd
+        echo ""
         echo "=== gradle.properties ==="
         cat gradle.properties
         echo ""
         echo "=== build.gradle.kts ==="
         cat build.gradle.kts
 
+    - name: Verify AndroidX properties
+      run: |
+        echo "=== Checking effective AndroidX properties ==="
+        ./gradlew -q :app:properties | grep -E "android\.useAndroidX|android\.enableJetifier" || echo "Properties not found in output"
+
     - name: Build Debug APK
       id: build
-      run: ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
+      run: |
+        ./gradlew -p "$GITHUB_WORKSPACE" assembleDebug \
+          -Pandroid.useAndroidX=true \
+          -Pandroid.enableJetifier=true \
+          --no-daemon --stacktrace --info --warning-mode all 2>&1 | tee build.log
       continue-on-error: true
 
     - name: Upload Build Log
