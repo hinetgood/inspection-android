@@ -12,6 +12,9 @@ interface PhotoDao {
     @Query("SELECT * FROM photos WHERE addressId = :addressId ORDER BY sequence ASC")
     suspend fun getPhotosByAddressList(addressId: Long): List<Photo>
 
+    @Query("SELECT * FROM photos WHERE addressId = :addressId ORDER BY sequence ASC")
+    suspend fun getPhotosByAddressOnce(addressId: Long): List<Photo>
+
     @Query("SELECT * FROM photos WHERE id = :id")
     suspend fun getPhotoById(id: Long): Photo?
 

@@ -108,14 +108,11 @@ class PhotoListFragment : Fragment() {
             val photos = database.photoDao().getPhotosByAddressOnce(addressId)
             val sequence = photos.size + 1
 
-            val dialogView = layoutInflater.inflate(R.layout.dialog_edit_photo, null)
-            // TODO: Setup dialog views and save photo
-
             val photo = Photo(
                 addressId = addressId,
                 sequence = sequence,
                 originalPath = photoPath,
-                watermarkedPath = photoPath, // Will be processed
+                watermarkedPath = photoPath,
                 position = "牆",
                 material = "P"
             )
@@ -153,6 +150,11 @@ class PhotoListFragment : Fragment() {
                 binding.btnExport.text = "匯出中..."
 
                 val address = database.addressDao().getAddressById(addressId)
+                if (address == null) {
+                    Toast.makeText(context, "找不到地址資料", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
                 val photos = database.photoDao().getPhotosByAddressOnce(addressId)
 
                 if (photos.isEmpty()) {
