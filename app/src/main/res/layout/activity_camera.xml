@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <!-- 相機預覽 -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/viewFinder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- 頂部控制列 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:background="#80000000">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_back"
+            android:contentDescription="返回" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/tvZoomLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.0X"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- 底部控制區 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#80000000">
+
+        <!-- 縮放快捷按鈕 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="12dp">
+
+            <Button
+                android:id="@+id/btnZoom05"
+                android:layout_width="56dp"
+                android:layout_height="40dp"
+                android:text="0.5X"
+                android:textSize="12sp"
+                android:backgroundTint="@color/gray_700"
+                android:layout_marginHorizontal="8dp" />
+
+            <Button
+                android:id="@+id/btnZoom1"
+                android:layout_width="56dp"
+                android:layout_height="40dp"
+                android:text="1X"
+                android:textSize="12sp"
+                android:backgroundTint="@color/gray_700"
+                android:layout_marginHorizontal="8dp" />
+
+            <Button
+                android:id="@+id/btnZoom2"
+                android:layout_width="56dp"
+                android:layout_height="40dp"
+                android:text="2X"
+                android:textSize="12sp"
+                android:backgroundTint="@color/gray_700"
+                android:layout_marginHorizontal="8dp" />
+
+        </LinearLayout>
+
+        <!-- 縮放滑桿 -->
+        <SeekBar
+            android:id="@+id/zoomSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:max="100"
+            android:progress="50"
+            android:progressTint="@android:color/white"
+            android:thumbTint="@android:color/white" />
+
+        <!-- 拍照按鈕 -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            <ImageButton
+                android:id="@+id/btnCapture"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_capture_button"
+                android:src="@drawable/ic_camera"
+                android:scaleType="center"
+                android:contentDescription="拍照" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">鑑定助手</string>
+    <string name="add_case">新增案件</string>
+    <string name="add_address">新增地址</string>
+    <string name="take_photo">拍照</string>
+    <string name="export_pdf">匯出PDF</string>
+    <string name="save">儲存</string>
+    <string name="cancel">取消</string>
+    <string name="delete">刪除</string>
+    <string name="case_name">案件名稱</string>
+    <string name="address">地址</string>
+    <string name="position">位置</string>
+    <string name="material">現況面材</string>
+    <string name="crack">裂縫</string>
+    <string name="crack_width">寬度</string>
+    <string name="crack_shape">形狀</string>
+    <string name="crack_count">數量</string>
+    <string name="peeling">剝落</string>
+    <string name="seepage">滲漬</string>
+    <string name="remark">備註</string>
+    <string name="quick_crack">裂縫</string>
+    <string name="quick_normal">現況</string>
+    <string name="no_cases">尚無案件</string>
+    <string name="no_addresses">尚無地址</string>
+    <string name="no_photos">尚無照片</string>
+</resources>
