@@ -33,7 +33,14 @@ jobs:
       run: rm -rf app/build .gradle ~/.gradle/caches
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon --stacktrace
+      run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee gradle-output.txt; exit ${PIPESTATUS[0]}
+
+    - name: Upload Gradle Log
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: gradle-log
+        path: gradle-output.txt
 
     - name: Find APK
       run: find . -name "*.apk" -type f
