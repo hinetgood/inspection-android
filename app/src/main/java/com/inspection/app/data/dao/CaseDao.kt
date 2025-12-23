@@ -13,13 +13,13 @@ interface CaseDao {
     suspend fun getCaseById(id: Long): Case?
 
     @Insert
-    suspend fun insert(case: Case): Long
+    suspend fun insert(caseEntity: Case): Long
 
     @Update
-    suspend fun update(case: Case)
+    suspend fun update(caseEntity: Case)
 
     @Delete
-    suspend fun delete(case: Case)
+    suspend fun delete(caseEntity: Case)
 
     @Query("DELETE FROM cases WHERE id = :id")
     suspend fun deleteById(id: Long)

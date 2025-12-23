@@ -53,10 +53,12 @@ jobs:
 
     - name: Build Debug APK
       run: |
+        set -o pipefail
         ./gradlew :app:assembleDebug \
           -Pandroid.useAndroidX=true \
           -Pandroid.enableJetifier=true \
           --no-daemon --stacktrace 2>&1 | tee build.log
+        exit ${PIPESTATUS[0]}
 
     - name: Upload Build Log
       if: always()
