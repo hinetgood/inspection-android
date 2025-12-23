@@ -140,26 +140,28 @@ class CameraActivity : AppCompatActivity() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
         cameraProviderFuture.addListener({
-            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-
-            val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
-                }
-
-            imageCapture = ImageCapture.Builder()
-                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
-                .build()
-
-            // 選擇後置廣角鏡頭
-            val cameraSelector = CameraSelector.Builder()
-                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                .build()
-
             try {
+                val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+
+                val preview = Preview.Builder()
+                    .build()
+                    .also {
+                        it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
+                    }
+
+                imageCapture = ImageCapture.Builder()
+                    .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                    .build()
+
+                // 選擇後置廣角鏡頭
+                val cameraSelector = CameraSelector.Builder()
+                    .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                    .build()
+
                 cameraProvider.unbindAll()
                 camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
+
+                Log.d(TAG, "Camera bound successfully")
 
                 // 取得實際的縮放範圍
                 camera?.cameraInfo?.zoomState?.observe(this) { zoomState ->
@@ -179,8 +181,9 @@ class CameraActivity : AppCompatActivity() {
                 }
 
             } catch (exc: Exception) {
-                Log.e(TAG, "Camera binding failed", exc)
-                Toast.makeText(this, "相機啟動失敗", Toast.LENGTH_SHORT).show()
+                Log.e(TAG, "Camera initialization failed", exc)
+                Toast.makeText(this, "相機啟動失敗: ${exc.message}", Toast.LENGTH_LONG).show()
+                finish()
             }
 
         }, ContextCompat.getMainExecutor(this))
